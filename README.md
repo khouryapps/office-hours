@@ -20,8 +20,6 @@ Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Nort
 
 - Live TA status cards
 
-- Web and [Twilio](https://www.twilio.com/) SMS notifications
-
 - Wait time insights
 
 - Question grouping
