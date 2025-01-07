@@ -34,12 +34,12 @@ Clone this repo to your local machine using `https://github.com/sandboxnu/office
 
 ### Step 2
 
-Hack away! Take a look [here]([https://github.com/sandboxnu/office-hours](https://github.com/khouryapps/office-hours/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) for some good issues to start on.
+Hack away! Take a look [https://github.com/khouryapps/office-hours](https://github.com/khouryapps/office-hours/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) for some good issues to start on.
 
 ### Step 3
 
-Create a new pull request using <a href="https://github.com/khouryapps/office-hours/compare/" target="_blank">`https://github.com/sandboxnu/office-hours/compare/`</a>
+Create a new pull request using <a href="https://github.com/khouryapps/office-hours/compare/" target="_blank">`https://github.com/khouryapps/office-hours/compare/`</a>
 
 ## License
 
-[GPL](https://github.com/sandboxnu/office-hours/blob/master/LICENSE)
+[GPL](https://github.com/khouryapps/office-hours/blob/master/LICENSE)
