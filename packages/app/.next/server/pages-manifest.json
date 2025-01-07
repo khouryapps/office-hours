@@ -1,1 +1,18 @@
-{"/_app":"static/SkLW0oSO7ymsLgYzKNLjW/pages/_app.js","/_document":"static/SkLW0oSO7ymsLgYzKNLjW/pages/_document.js","/_error":"static/SkLW0oSO7ymsLgYzKNLjW/pages/_error.js","/about":"static/SkLW0oSO7ymsLgYzKNLjW/pages/about.html","/apply":"static/SkLW0oSO7ymsLgYzKNLjW/pages/apply.html","/course/[cid]/course_admin_panel":"static/SkLW0oSO7ymsLgYzKNLjW/pages/course/[cid]/course_admin_panel.html","/course/[cid]/insights":"static/SkLW0oSO7ymsLgYzKNLjW/pages/course/[cid]/insights.html","/course/[cid]/queue/[qid]":"static/SkLW0oSO7ymsLgYzKNLjW/pages/course/[cid]/queue/[qid].html","/course/[cid]/schedule":"static/SkLW0oSO7ymsLgYzKNLjW/pages/course/[cid]/schedule.html","/course/[cid]/today":"static/SkLW0oSO7ymsLgYzKNLjW/pages/course/[cid]/today.html","/dev":"static/SkLW0oSO7ymsLgYzKNLjW/pages/dev.html","/index":"static/SkLW0oSO7ymsLgYzKNLjW/pages/index.html","/login":"static/SkLW0oSO7ymsLgYzKNLjW/pages/login.html","/nocourses":"static/SkLW0oSO7ymsLgYzKNLjW/pages/nocourses.html","/settings":"static/SkLW0oSO7ymsLgYzKNLjW/pages/settings.html","/":"static/SkLW0oSO7ymsLgYzKNLjW/pages/index.html","/404":"static/SkLW0oSO7ymsLgYzKNLjW/pages/404.html"}
+{
+  "/_app": "pages/_app.js",
+  "/_document": "pages/_document.js",
+  "/about": "pages/about.html",
+  "/apply": "pages/apply.html",
+  "/course/[cid]/course_admin_panel": "pages/course/[cid]/course_admin_panel.html",
+  "/course/[cid]/insights": "pages/course/[cid]/insights.html",
+  "/course/[cid]/queue/[qid]": "pages/course/[cid]/queue/[qid].html",
+  "/course/[cid]/schedule": "pages/course/[cid]/schedule.html",
+  "/course/[cid]/today": "pages/course/[cid]/today.html",
+  "/dev": "pages/dev.html",
+  "/": "pages/index.html",
+  "/login": "pages/login.html",
+  "/nocourses": "pages/nocourses.html",
+  "/settings": "pages/settings.html",
+  "/_error": "pages/_error.js",
+  "/404": "pages/404.html"
+}

@@ -124,19 +124,6 @@ export default function SettingsPage({
                 {profile.firstName} {profile.lastName}
               </h2>
             )}
-            <Upload
-              action={"/api/v1/profile/upload_picture"}
-              beforeUpload={beforeUpload}
-              showUploadList={false}
-              onChange={(info) => {
-                setUploading(info.file.status === "uploading");
-                mutate();
-              }}
-            >
-              <ProfilePicButton icon={<UploadOutlined />}>
-                Edit photo
-              </ProfilePicButton>
-            </Upload>
             {profile?.photoURL && (
               <ProfilePicButton
                 icon={<DeleteOutlined />}

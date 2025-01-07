@@ -90,10 +90,11 @@ export class CourseController {
           'Error message: ' +
           err,
       );
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseHeatMapError,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      //throw new HttpException(
+      //  ERROR_MESSAGES.courseController.courseHeatMapError,
+      //  HttpStatus.INTERNAL_SERVER_ERROR,
+      //);
+      course.heatmap = [];
     }
 
     const userCourseModel = await UserCourseModel.findOne({

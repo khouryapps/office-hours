@@ -1,9 +1,8 @@
-import React, { ReactElement } from "react";
+import React, { useEffect, useState, ReactElement } from "react";
 import { LinkedinFilled, LinkOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
-// This is basically ripped from the AntD Card, but with an added animation so the CardContents
-// pulls up on hover
+// Styled components
 const StyledCard = styled.div`
   margin: 7px;
   position: relative;
@@ -24,6 +23,7 @@ const StyledCard = styled.div`
       0 5px 12px 4px rgb(0 0 0 / 9%);
   }
 `;
+
 const CardContents = styled.div`
   color: #5f6b79;
   font-size: 14px;
@@ -34,7 +34,6 @@ const CardContents = styled.div`
   border-radius: 8px;
   z-index: 2;
   position: absolute;
-  // top = imageHeight - borderRadius
   top: 192px;
   transition: top 0.5s;
 
@@ -42,11 +41,13 @@ const CardContents = styled.div`
     top: 130px;
   }
 `;
+
 const CardTitle = styled.div`
   font-weight: 600;
   color: #2a426b;
   font-size: 16px;
 `;
+
 const ImageOverlay = styled.div`
   width: 200px;
   height: 200px;
@@ -61,6 +62,7 @@ const ImageOverlay = styled.div`
     opacity: 0.8;
   }
 `;
+
 const LinkIcons = styled.div`
   position: absolute;
   top: 75px;
@@ -69,6 +71,7 @@ const LinkIcons = styled.div`
   display: flex;
   align-items: center;
 `;
+
 const NavyLink = styled.a`
   margin-right: 10px;
   color: #2a426b;
@@ -77,22 +80,54 @@ const NavyLink = styled.a`
   }
 `;
 
-export default function ProfileCard({
-  name,
-  role,
-  linkedin,
-  personalSite,
-  imgSrc,
-}: {
+// Function to generate initials image
+const generateInitialsImage = (name: string): string => {
+  const initials = name
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase())
+    .join("");
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 200;
+  canvas.height = 200;
+  const context = canvas.getContext("2d");
+
+  if (context) {
+    context.fillStyle = "#2a426b"; // Background color
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#ffffff"; // Text color
+    context.font = "bold 80px Arial";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(initials, canvas.width / 2, canvas.height / 2);
+  }
+
+  return canvas.toDataURL();
+};
+
+interface ProfileCardProps {
   name: string;
   role: string;
   linkedin?: string;
   personalSite?: string;
-  imgSrc: string;
-}): ReactElement {
+}
+
+const ProfileCard: React.FC<ProfileCardProps> = ({
+  name,
+  role,
+  linkedin,
+  personalSite,
+}): ReactElement => {
+  const [imgSrc, setImgSrc] = useState<string>("");
+
+  useEffect(() => {
+    const initialsImage = generateInitialsImage(name);
+    setImgSrc(initialsImage);
+  }, [name]);
+
   return (
     <StyledCard>
-      <img width={200} alt={`${name}'s profile image`} src={imgSrc} />
+      <img width={200} alt={`${name}'s profile`} src={imgSrc} />
       <ImageOverlay />
       <CardContents>
         <CardTitle>{name}</CardTitle>
@@ -119,4 +154,7 @@ export default function ProfileCard({
       </CardContents>
     </StyledCard>
   );
-}
+};
+
+export default ProfileCard;
+

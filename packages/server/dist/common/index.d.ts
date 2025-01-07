@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { Cache } from "cache-manager";
 export declare const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export declare const STAGING_URL = "https://staging.khouryofficehours.com";
 export declare const getEnv: () => "production" | "staging" | "dev";
@@ -14,6 +15,7 @@ export declare class User {
     defaultMessage?: string;
     includeDefaultMessage: boolean;
     courses: UserCourse[];
+    pendingCourses?: KhouryProfCourse[];
     desktopNotifsEnabled: boolean;
     desktopNotifs: DesktopNotifPartial[];
     phoneNotifsEnabled: boolean;
@@ -45,12 +47,6 @@ export declare enum Role {
     TA = "ta",
     PROFESSOR = "professor"
 }
-declare class OfficeHourPartial {
-    id: number;
-    title: string;
-    startTime: Date;
-    endTime: Date;
-}
 export interface Queue {
     id: number;
     course: CoursePartial;
@@ -68,6 +64,7 @@ export declare class QueuePartial {
     queueSize: number;
     notes?: string;
     isOpen: boolean;
+    isDisabled: boolean;
     startTime?: Date;
     endTime?: Date;
     allowQuestions: boolean;
@@ -86,7 +83,6 @@ export declare class Question {
     groupable: boolean;
     status: QuestionStatus;
     location?: string;
-    isOnline?: boolean;
 }
 export declare enum QuestionType {
     Concept = "Concept",
@@ -154,25 +150,21 @@ export declare class KhouryDataParams {
     email: string;
     first_name: string;
     last_name: string;
-    campus: string;
+    campus: number;
     photo_url: string;
-    courses: KhouryStudentCourse[];
-    ta_courses: KhouryTACourse[];
+    courses: KhouryCourse[] | KhouryProfCourse[];
 }
-export declare class KhouryStudentCourse {
+export declare class KhouryCourse {
     crn: number;
-    course: string;
-    accelerated: boolean;
-    section: number;
     semester: string;
-    title: string;
-    campus: string;
+    role: "TA" | "Student";
 }
-export declare class KhouryTACourse {
-    course: string;
+export declare class KhouryProfCourse {
+    crns: number[];
     semester: string;
-    instructor: number;
+    name: string;
 }
+export declare function isKhouryCourse(c: KhouryCourse | KhouryProfCourse): c is KhouryCourse;
 export interface KhouryRedirectResponse {
     redirect: string;
 }
@@ -188,10 +180,16 @@ export declare class UpdateProfileParams {
 export declare class GetCourseResponse {
     id: number;
     name: string;
-    officeHours: Array<OfficeHourPartial>;
     queues: QueuePartial[];
     heatmap: Heatmap | false;
+    coordinator_email: string;
+    crns: number[];
+    icalURL: string;
     selfEnroll: boolean;
+}
+export declare class GetCourseUserInfoResponse {
+    users: UserPartial[];
+    total: number;
 }
 export declare class GetSelfEnrollResponse {
     courses: CoursePartial[];
@@ -221,6 +219,7 @@ export declare class ListQuestionsResponse {
     queue: Array<Question>;
     priorityQueue: Array<Question>;
     groups: Array<QuestionGroup>;
+    unresolvedAlerts?: Array<AlertPayload>;
 }
 export declare class GetQuestionResponse extends Question {
 }
@@ -232,7 +231,6 @@ export declare class CreateQuestionParams {
     questionType?: QuestionType;
     groupable: boolean;
     queueId: number;
-    isOnline?: boolean;
     location?: string;
     force: boolean;
 }
@@ -244,7 +242,6 @@ export declare class UpdateQuestionParams {
     groupable?: boolean;
     queueId?: number;
     status?: QuestionStatus;
-    isOnline?: boolean;
     location?: string;
 }
 export declare class UpdateQuestionResponse extends Question {
@@ -262,8 +259,6 @@ export declare type QueueNotePayloadType = {
 };
 export declare class TACheckoutResponse {
     queueId: number;
-    canClearQueue: boolean;
-    nextOfficeHourTime?: Date;
 }
 export declare class UpdateQueueParams {
     notes?: string;
@@ -307,14 +302,18 @@ export declare class CreateAlertResponse extends Alert {
 export declare class GetAlertsResponse {
     alerts: Alert[];
 }
-export declare class SubmitCourseParams {
-    coordinator_email: string;
+export declare class RegisterCourseParams {
+    sectionGroupName: string;
     name: string;
-    sections: number[];
-    semester: string;
+    iCalURL: string;
+    coordinator_email: string;
     timezone: string;
-    icalURL: string;
-    password: string;
+}
+export declare class EditCourseInfoParams {
+    name?: string;
+    coordinator_email?: string;
+    icalURL?: string;
+    crns?: number[];
 }
 export declare class SemesterPartial {
     id: number;
@@ -364,7 +363,7 @@ export interface InsightObject {
     roles: Role[];
     component: InsightComponent;
     size: "default" | "small";
-    compute: (insightFilters: any) => Promise<PossibleOutputTypes>;
+    compute: (insightFilters: any, cacheManager?: Cache) => Promise<PossibleOutputTypes>;
 }
 export declare enum InsightComponent {
     SimpleDisplay = "SimpleDisplay",
@@ -384,6 +383,7 @@ export declare type BarChartOutputType = {
 export declare type SimpleTableOutputType = {
     dataSource: StringMap<string>[];
     columns: StringMap<string>[];
+    totalStudents: number;
 };
 export declare type StringMap<T> = {
     [key: string]: T;
@@ -392,21 +392,34 @@ export declare type DateRangeType = {
     start: string;
     end: string;
 };
+export declare type InsightParamsType = {
+    start: string;
+    end: string;
+    limit: number;
+    offset: number;
+};
 export declare const ERROR_MESSAGES: {
+    common: {
+        pageOutOfBounds: string;
+    };
     courseController: {
         checkIn: {
-            cannotCreateNewQueueIfNotProfessor: string;
             cannotCheckIntoMultipleQueues: string;
         };
+        courseAlreadyRegistered: string;
         courseNotFound: string;
+        sectionGroupNotFound: string;
         courseOfficeHourError: string;
         courseHeatMapError: string;
+        courseCrnsError: string;
         courseModelError: string;
         noUserFound: string;
         noSemesterFound: string;
         updatedQueueError: string;
         queuesNotFound: string;
         queueNotFound: string;
+        queueAlreadyExists: string;
+        queueNotAuthorized: string;
         saveQueueError: string;
         clearQueueError: string;
         createEventError: string;
@@ -416,7 +429,9 @@ export declare const ERROR_MESSAGES: {
         createCourse: string;
         updateCourse: string;
         createCourseMappings: string;
+        updateProfLastRegistered: string;
         invalidApplyURL: string;
+        crnAlreadyRegistered: (crn: number, courseId: number) => string;
     };
     questionController: {
         createQuestion: {
@@ -462,6 +477,8 @@ export declare const ERROR_MESSAGES: {
         getQuestions: string;
         saveQueue: string;
         cleanQueue: string;
+        cannotCloseQueue: string;
+        missingStaffList: string;
     };
     queueRoleGuard: {
         queueNotFound: string;
@@ -472,6 +489,7 @@ export declare const ERROR_MESSAGES: {
     insightsController: {
         insightUnathorized: string;
         insightNameNotFound: string;
+        insightsDisabled: string;
     };
     roleGuard: {
         notLoggedIn: string;
@@ -487,6 +505,7 @@ export declare const ERROR_MESSAGES: {
     alertController: {
         duplicateAlert: string;
         notActiveAlert: string;
+        incorrectPayload: string;
     };
     sseService: {
         getSubClient: string;
@@ -504,5 +523,8 @@ export declare const ERROR_MESSAGES: {
         publish: string;
         clientIdNotFound: string;
     };
+    resourcesService: {
+        noDiskSpace: string;
+        saveCalError: string;
+    };
 };
-export {};

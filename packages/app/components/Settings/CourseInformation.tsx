@@ -102,7 +102,7 @@ export default function CourseInfo({
               <a
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://info.khouryofficehours.com/coordinators-manual"
+                href="https://sandboxnu.notion.site/Coordinator-s-Manual-f1e3bb50e50a4d84bfdb1275bfc559ff"
               >
                 here
               </a>{" "}

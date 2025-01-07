@@ -1,7 +1,7 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { Role } from "@koh/common";
-import { Divider, Input, List, Pagination, Spin } from "antd";
+import { Alert, Divider, Input, List, Pagination, Spin } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import { useState } from "react";
 import { ReactElement } from "react";
@@ -33,6 +33,13 @@ export default function CourseRoster({
   return (
     <CourseRosterComponent>
       <h1>Course Roster</h1>
+      <Alert
+        message="Notice"
+        description="Please note that the roster will update as users log into the office hours app. There is no direct user synchronization with the Admin Portal."
+        type="warning"
+        showIcon
+        style={{ marginBottom: '16px' }}
+      />
       <RenderTable
         courseId={courseId}
         role={Role.PROFESSOR}

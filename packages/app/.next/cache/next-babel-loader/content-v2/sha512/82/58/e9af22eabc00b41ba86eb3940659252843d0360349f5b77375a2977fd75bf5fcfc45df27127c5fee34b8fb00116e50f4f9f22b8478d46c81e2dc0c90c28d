@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { useProfile } from \"./useProfile\";\nexport function useDefaultMessage() {\n  const profile = useProfile();\n  return (profile === null || profile === void 0 ? void 0 : profile.includeDefaultMessage) && (profile === null || profile === void 0 ? void 0 : profile.defaultMessage) || \"\";\n}","map":null,"metadata":{},"sourceType":"module"}

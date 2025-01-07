@@ -1,6 +1,6 @@
 import { API } from "@koh/api-client";
 import { DesktopNotifBody } from "@koh/common";
-import { urlB64ToUint8Array } from "./urlB64ToUint8Array";
+import { urlB64ToUint8Array } from "./urlB64ToUint8Array"; // Keep this line
 import platform from "platform";
 
 const doesBrowserSupportNotifications = () =>
@@ -70,3 +70,4 @@ export async function getEndpoint(): Promise<string | NotificationStates> {
   )?.pushManager?.getSubscription();
   return subscription?.endpoint;
 }
+

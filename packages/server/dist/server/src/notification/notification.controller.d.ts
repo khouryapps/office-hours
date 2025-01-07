@@ -1,4 +1,4 @@
-import { DesktopNotifBody, DesktopNotifPartial, TwilioBody } from '@koh/common';
+import { DesktopNotifBody, DesktopNotifPartial } from '@koh/common';
 import { ConfigService } from '@nestjs/config';
 import { NotificationService } from './notification.service';
 export declare class NotificationController {
@@ -8,5 +8,4 @@ export declare class NotificationController {
     getDesktopCredentials(): string;
     registerDesktopUser(body: DesktopNotifBody, userId: number): Promise<DesktopNotifPartial>;
     deleteDesktopUser(deviceId: number, userId: number): Promise<void>;
-    verifyPhoneUser(body: TwilioBody, twilioSignature: string): Promise<string>;
 }

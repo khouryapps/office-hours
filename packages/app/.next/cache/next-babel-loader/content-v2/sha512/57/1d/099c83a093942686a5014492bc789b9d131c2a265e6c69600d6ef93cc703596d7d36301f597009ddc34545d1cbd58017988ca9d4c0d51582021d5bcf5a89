@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { useEffect, useState } from \"react\";\nexport const useIsMobile = () => {\n  const {\n    0: isMobile,\n    1: setIsMobile\n  } = useState(false);\n  useEffect(() => {\n    setIsMobile(window.innerWidth < 768);\n  }, []);\n  return isMobile;\n};","map":null,"metadata":{},"sourceType":"module"}

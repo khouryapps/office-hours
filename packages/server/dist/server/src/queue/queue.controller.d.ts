@@ -16,4 +16,5 @@ export declare class QueueController {
     updateQueue(queueId: number, body: UpdateQueueParams): Promise<QueueModel>;
     cleanQueue(queueId: number): Promise<void>;
     sendEvent(queueId: number, role: Role, userId: number, res: Response): void;
+    disableQueue(queueId: number, role: Role): Promise<void>;
 }

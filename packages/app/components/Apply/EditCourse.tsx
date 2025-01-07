@@ -17,8 +17,8 @@ type EditCourseProps = {
 };
 
 export const TimezoneCampusMapping = {
-  "America/New_York": "Boston / Charlotte",
-  "America/Los_Angeles": "San Francisco / Seattle",
+  "America/New_York": "East Coast US",
+  "America/Los_Angeles": "West Coast US",
   "America/Toronto": "Toronto",
   "America/Vancouver": "Vancouver",
 };
@@ -106,7 +106,7 @@ export default function EditCourse({
               <a
                 target="_blank"
                 rel="noreferrer"
-                href="https://info.khouryofficehours.com/coordinators-manual"
+                href="https://sandboxnu.notion.site/Coordinator-s-Manual-f1e3bb50e50a4d84bfdb1275bfc559ff"
               >
                 here
               </a>{" "}

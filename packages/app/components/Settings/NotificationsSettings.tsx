@@ -5,7 +5,7 @@ import {
   ERROR_MESSAGES,
   UpdateProfileParams,
 } from "@koh/common";
-import { Button, Form, List, message, Switch, Tooltip } from "antd";
+import { Button, Form, Input, List, message, Switch, Tooltip } from "antd";
 import { pick } from "lodash";
 import { HeaderTitle } from "./Styled";
 import React, { ReactElement, useEffect, useState } from "react";
@@ -37,8 +37,6 @@ export default function NotificationsSettings(): ReactElement {
     await API.profile.patch(
       pick(newProfile, [
         "desktopNotifsEnabled",
-        "phoneNotifsEnabled",
-        "phoneNumber",
       ])
     );
     mutate();
@@ -94,7 +92,7 @@ export default function NotificationsSettings(): ReactElement {
             style={{ float: "right", fontSize: "25px" }}
             onClick={() =>
               window.open(
-                "https://info.khouryofficehours.com/593f9eb67eb04abbb8008c285ed5a8dd"
+                "https://sandboxnu.notion.site/Khoury-Office-Hours-App-6eb1ee9f338f4b859cd89054f6503f43"
               )
             }
           />
@@ -199,3 +197,4 @@ function DeviceNotifPanel() {
     </div>
   );
 }
+

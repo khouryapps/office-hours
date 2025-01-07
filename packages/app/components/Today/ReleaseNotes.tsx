@@ -52,15 +52,6 @@ export default function ReleaseNotes(): ReactElement {
           bodyStyle={{ padding: "0px 24px" }}
           footer={
             <>
-              <b>Want to see more? </b>
-              <a
-                href="https://info.khouryofficehours.com/release-notes-archive"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {" "}
-                Click here to view the archive
-              </a>
             </>
           }
           width={625}

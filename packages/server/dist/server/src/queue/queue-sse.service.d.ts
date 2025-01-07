@@ -12,8 +12,8 @@ export declare class QueueSSEService {
     private sseService;
     constructor(queueService: QueueService, sseService: SSEService<QueueClientMetadata>);
     subscribeClient(queueId: number, res: Response, metadata: QueueClientMetadata): void;
-    updateQuestions: ((queueId: number) => Promise<void>) & import("lodash").Cancelable;
-    updateQueue: ((queueId: number) => Promise<void>) & import("lodash").Cancelable;
+    updateQuestions: import("lodash").DebouncedFunc<(queueId: number) => Promise<void>>;
+    updateQueue: import("lodash").DebouncedFunc<(queueId: number) => Promise<void>>;
     private sendToRoom;
     private throttleUpdate;
 }

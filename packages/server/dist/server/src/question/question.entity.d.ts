@@ -19,7 +19,6 @@ export declare class QuestionModel extends BaseEntity {
     questionType: QuestionType;
     status: QuestionStatus;
     location: string;
-    isOnline: boolean;
     groupable: boolean;
     group: QuestionGroupModel;
     groupId: number;

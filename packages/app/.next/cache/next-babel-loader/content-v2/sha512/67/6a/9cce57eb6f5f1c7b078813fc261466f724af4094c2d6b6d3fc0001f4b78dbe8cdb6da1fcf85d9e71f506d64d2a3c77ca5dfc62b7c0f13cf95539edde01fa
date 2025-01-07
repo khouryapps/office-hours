@@ -1,0 +1,1 @@
+{"ast":null,"code":"// Shared functions across queue components. Kinda sad rn pls add :(\nexport function truncate(string, length) {\n  if (string.length > length) {\n    return string.substring(0, length - 3) + \"...\";\n  }\n\n  return string;\n}","map":null,"metadata":{},"sourceType":"module"}

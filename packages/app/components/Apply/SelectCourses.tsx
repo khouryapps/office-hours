@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { Select, Button, Tag } from "antd";
+import { Alert, Select, Button, Tag } from "antd";
 import { useProfile } from "../../hooks/useProfile";
 import { KhouryProfCourse } from "@koh/common";
 import { useEffect } from "react";
@@ -64,6 +64,20 @@ export default function SelectCourses({
 
   return (
     <div>
+      <Alert
+        message="Notice"
+        description="You can only register courses once per semester."
+        type="warning"
+        showIcon
+        style={{ marginBottom: '16px' }}
+      />
+      <Alert
+        message="Notice"
+        description="The Admin Portal will start sending data 1 week before the start of the semester. Once it does, this form can be filled out."
+        type="warning"
+        showIcon
+        style={{ marginBottom: '16px' }}
+      />
       <div>
         It looks like this is your first time using the app for this semester.
         Please pick out all the courses you want to use Khoury Office Hours for.

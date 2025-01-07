@@ -6,7 +6,7 @@ export declare class InsightsController {
     private connection;
     private insightsService;
     constructor(connection: Connection, insightsService: InsightsService);
-    get(role: Role, courseId: number, insightName: string, start: string, end: string): Promise<GetInsightOutputResponse>;
+    get(role: Role, courseId: number, insightName: string, start: string, end: string, limit: number, offset: number): Promise<GetInsightOutputResponse>;
     getAllInsights(): Promise<ListInsightsResponse>;
     toggleInsightOn(body: {
         insightName: string;

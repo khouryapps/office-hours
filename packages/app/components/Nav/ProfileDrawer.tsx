@@ -107,23 +107,11 @@ export default function ProfileDrawer({
                 key="1"
                 icon={<QuestionCircleOutlined />}
                 onClick={() => {
-                  window.open("https://info.khouryofficehours.com/help");
+                  window.open("https://sandboxnu.notion.site/Khoury-Office-Hours-App-6eb1ee9f338f4b859cd89054f6503f43");
                   setIsPopoverOpen(false);
                 }}
               >
                 Help Guide
-              </Menu.Item>
-              <Menu.Item
-                key="2"
-                icon={<FileTextOutlined />}
-                onClick={() => {
-                  window.open(
-                    "https://info.khouryofficehours.com/release-notes-archive"
-                  );
-                  setIsPopoverOpen(false);
-                }}
-              >
-                Release Notes
               </Menu.Item>
               <Menu.Item key="3" icon={<ReadOutlined />}>
                 <Link href={"/about"}>
