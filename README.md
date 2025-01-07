@@ -23,8 +23,6 @@ A special thank you to all developers who were on the team over the past 3 years
 
 - Live TA status cards
 
-- Web and [Twilio](https://www.twilio.com/) SMS notifications
-
 - Wait time insights
 
 - Question grouping
