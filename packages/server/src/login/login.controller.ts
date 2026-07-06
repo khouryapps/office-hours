@@ -75,7 +75,7 @@ export class LoginController {
     }
     // Create temporary login token to send user to.
     const token = await this.jwtService.signAsync(
-      { userId: user.id },
+      { userId: user.id, token_type: 'login' },
       { expiresIn: 60 },
     );
 
@@ -102,20 +102,16 @@ export class LoginController {
     @Res() res: Response,
     @Query('token') token: string,
   ): Promise<void> {
-    const isVerified = await this.jwtService.verifyAsync(token);
-
-    if (!isVerified) {
+    let payload: { userId: number; token_type?: string };
+    try {
+      payload = await this.jwtService.verifyAsync(token);
+    } catch (err) {
       throw new UnauthorizedException();
     }
 
-    const payload = this.jwtService.decode(token) as { userId: number };
-
-    if (payload === null || payload === undefined) {
-      console.error('Decoded JWT is invalid');
-      throw new HttpException(
-        ERROR_MESSAGES.loginController.invalidPayload,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    // Only short-lived login tokens may enter; auth tokens are rejected
+    if (!payload || payload.token_type !== 'login') {
+      throw new UnauthorizedException();
     }
 
     return this.enter(res, payload.userId);
@@ -133,11 +129,11 @@ export class LoginController {
 
   // Set cookie and redirect to proper page
   private async enter(res: Response, userId: number) {
-    // Expires in 30 days
-    const authToken = await this.jwtService.signAsync({
-      userId,
-      expiresIn: 60 * 60 * 24 * 30,
-    });
+    const authToken = await this.jwtService.signAsync(
+      { userId, token_type: 'auth' },
+      // Expires in 30 days
+      { expiresIn: 60 * 60 * 24 * 30 },
+    );
 
     if (authToken === null || authToken === undefined) {
       console.error('Authroziation JWT is invalid');
@@ -151,18 +147,27 @@ export class LoginController {
       .get<string>('DOMAIN')
       .startsWith('https://');
     res
-      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
+      .cookie('auth_token', authToken, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: 'lax',
+      })
       .redirect(302, '/');
   }
 
-  @Get('/logout')
+  @Post('/logout')
   async logout(@Res() res: Response): Promise<void> {
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
     res
-      .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
-      .redirect(302, '/login');
+      .clearCookie('auth_token', {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: 'lax',
+      })
+      .status(200)
+      .send();
   }
 
   @Get('self_enroll_courses')
@@ -179,7 +184,7 @@ export class LoginController {
   ): Promise<void> {
     const course = await CourseModel.findOne(courseId);
 
-    if (!course.selfEnroll) {
+    if (!course || !course.selfEnroll) {
       throw new UnauthorizedException(
         'Cannot self-enroll to this course currently',
       );

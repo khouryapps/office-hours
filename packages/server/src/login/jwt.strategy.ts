@@ -14,7 +14,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: { userId: number }): any {
+  validate(payload: { userId: number; token_type?: string }): any {
+    // Only accept long-lived auth tokens as the session cookie; this also
+    // invalidates all pre-token_type tokens, which were issued without an
+    // expiration date
+    if (!payload || payload.token_type !== 'auth') {
+      return null;
+    }
     return { ...payload };
   }
 }
