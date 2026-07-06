@@ -73,6 +73,13 @@ export class LoginController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+    // Sync the user photo in the background; never blocks or fails the login
+    this.loginCourseService
+      .syncKhouryPhoto(user.id, body.photo_url)
+      .catch((err) =>
+        console.error('Failed to sync Khoury photo for user', user.id, err),
+      );
+
     // Create temporary login token to send user to.
     const token = await this.jwtService.signAsync(
       { userId: user.id, token_type: 'login' },

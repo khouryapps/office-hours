@@ -14,6 +14,12 @@ import { SemesterModel } from 'semester/semester.entity';
 import { Connection, In, Not } from 'typeorm';
 import { ProfSectionGroupsModel } from './prof-section-groups.entity';
 import { khourySemesterCodes } from './last-registration-model.entity';
+import {
+  fetchPhoto,
+  isCustomPhoto,
+  khouryPhotoFileName,
+  savePhotoBuffer,
+} from 'profile/photos';
 
 @Injectable()
 export class LoginCourseService {
@@ -231,5 +237,31 @@ export class LoginCourseService {
   // util functions for converting Khoury Admin data to KOH data
   private convertKhouryRole(khouryRole: 'TA' | 'Student'): Role {
     return khouryRole.toLowerCase() === 'ta' ? Role.TA : Role.STUDENT;
+  }
+
+  /**
+   * Download the (expiring) Khoury photo-service URL into local storage,
+   * unless the user has uploaded their own picture (custom photos win).
+   * Called fire-and-forget from the login flow - must never block a login.
+   */
+  public async syncKhouryPhoto(
+    userId: number,
+    photoUrl: string,
+  ): Promise<void> {
+    if (!photoUrl) {
+      return;
+    }
+    const user = await UserModel.findOne(userId);
+    if (!user || (user.photoURL && isCustomPhoto(user.photoURL))) {
+      return;
+    }
+    const buffer = await fetchPhoto(photoUrl);
+    const fileName = khouryPhotoFileName(userId);
+    // Throws (aborting the sync) if the response was not a decodable image
+    await savePhotoBuffer(buffer, fileName);
+    if (user.photoURL !== fileName) {
+      user.photoURL = fileName;
+      await user.save();
+    }
   }
 }
