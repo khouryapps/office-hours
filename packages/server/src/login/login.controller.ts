@@ -147,18 +147,27 @@ export class LoginController {
       .get<string>('DOMAIN')
       .startsWith('https://');
     res
-      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
+      .cookie('auth_token', authToken, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: 'lax',
+      })
       .redirect(302, '/');
   }
 
-  @Get('/logout')
+  @Post('/logout')
   async logout(@Res() res: Response): Promise<void> {
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
     res
-      .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
-      .redirect(302, '/login');
+      .clearCookie('auth_token', {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: 'lax',
+      })
+      .status(200)
+      .send();
   }
 
   @Get('self_enroll_courses')
