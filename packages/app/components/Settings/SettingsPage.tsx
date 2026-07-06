@@ -257,13 +257,13 @@ export default function SettingsPage({
     <div>
       {isMobile ? (
         <Col>
-          <AvatarSettings />
+          {AvatarSettings()}
           <SettingsMenu />
         </Col>
       ) : (
         <Row>
           <Col span={5} style={{ textAlign: "center" }}>
-            <AvatarSettings />
+            {AvatarSettings()}
             <SettingsMenu />
           </Col>
           <VerticalDivider />
