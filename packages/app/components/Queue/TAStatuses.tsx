@@ -39,6 +39,7 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
         <Col key={ta.id}>
           <StatusCard
             taName={ta.name}
+            taPhotoURL={ta.photoURL}
             studentName={taToQuestion[ta.id]?.creator?.name}
             helpedAt={taToQuestion[ta.id]?.helpedAt}
             grouped={groups.some((g) => g.creator.id === ta.id)}
@@ -73,6 +74,7 @@ const HelpingInfo = styled.div`
 
 interface StatusCardProps {
   taName: string;
+  taPhotoURL?: string;
   studentName?: string;
   helpedAt?: Date;
   grouped?: boolean;
@@ -82,6 +84,7 @@ interface StatusCardProps {
  */
 function StatusCard({
   taName,
+  taPhotoURL,
   studentName,
   helpedAt,
   grouped,
@@ -89,7 +92,12 @@ function StatusCard({
   const isBusy = !!helpedAt;
   return (
     <StyledCard data-cy="ta-status-card">
-      <KOHAvatar size={48} name={taName} style={{ flexShrink: 0 }} />
+      <KOHAvatar
+        size={48}
+        name={taName}
+        photoURL={taPhotoURL}
+        style={{ flexShrink: 0 }}
+      />
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>

@@ -1,6 +1,8 @@
 import {
   BellOutlined,
   BookOutlined,
+  DeleteOutlined,
+  UploadOutlined,
   UserOutlined,
   WindowsOutlined,
 } from "@ant-design/icons";
@@ -8,7 +10,16 @@ import { Collapse } from "antd";
 import { API } from "@koh/api-client";
 import { Role } from "@koh/common";
 import { useWindowWidth } from "@react-hook/window-size";
-import { Button, Col, Menu, message, Row, Space } from "antd";
+import {
+  Button,
+  Col,
+  Menu,
+  message,
+  Row,
+  Skeleton,
+  Space,
+  Upload,
+} from "antd";
 import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
@@ -39,12 +50,18 @@ export const VerticalDivider = styled.div`
   }
 `;
 
+const ProfilePicButton = styled(Button)`
+  flex: wrap;
+  width: calc(5vw);
+  min-width: 180px;
+`;
+
 const { Panel } = Collapse;
 
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const { data: profile, error } = useSWR(`api/v1/profile`, async () =>
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
   const router = useRouter();
@@ -55,6 +72,7 @@ export default function SettingsPage({
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
+  const [uploading, setUploading] = useState(false);
   const isMobile = useIsMobile();
   const windowWidth = useWindowWidth();
   const [avatarSize, setAvatarSize] = useState(windowWidth / 2);
@@ -63,6 +81,20 @@ export default function SettingsPage({
     const widthDivider = isMobile ? 6 : 10;
     setAvatarSize(windowWidth / widthDivider);
   });
+
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG or PNG images!");
+    }
+
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error("Images must be smaller than 5MB!");
+    }
+
+    return isJpgOrPng && isLt5M;
+  };
 
   if (error) {
     message.error(error);
@@ -77,12 +109,67 @@ export default function SettingsPage({
             justifyContent: `${isMobile ? "left" : "center"}`,
           }}
         >
-          <SettingsPanelAvatar avatarSize={avatarSize} />
+          {uploading ? (
+            <Skeleton.Avatar
+              active={true}
+              size={avatarSize}
+              shape="circle"
+              style={{
+                marginTop: avatarSize / 6,
+                marginBottom: avatarSize / 12,
+                marginLeft: avatarSize / 6,
+                marginRight: avatarSize / 6,
+              }}
+            />
+          ) : (
+            <SettingsPanelAvatar avatarSize={avatarSize} />
+          )}
           <Col>
             {profile && (
               <h2>
                 {profile.firstName} {profile.lastName}
               </h2>
+            )}
+            <Upload
+              action="/api/v1/profile/upload_picture"
+              beforeUpload={beforeUpload}
+              showUploadList={false}
+              onChange={(info) => {
+                setUploading(info.file.status === "uploading");
+                if (info.file.status === "done") {
+                  message.success("Uploaded your new profile picture");
+                  mutate();
+                } else if (info.file.status === "error") {
+                  message.error(
+                    info.file.response?.message ??
+                      "Failed to upload your profile picture"
+                  );
+                }
+              }}
+            >
+              <ProfilePicButton
+                icon={<UploadOutlined />}
+                style={{ marginTop: "10px" }}
+              >
+                Upload a Picture
+              </ProfilePicButton>
+            </Upload>
+            {profile?.photoURL && (
+              <ProfilePicButton
+                icon={<DeleteOutlined />}
+                style={{ marginTop: "10px" }}
+                onClick={async () => {
+                  try {
+                    await API.profile.deleteProfilePicture();
+                    message.success("Removed your profile picture");
+                    mutate();
+                  } catch (e) {
+                    message.error("Failed to remove your profile picture");
+                  }
+                }}
+              >
+                Remove my Picture
+              </ProfilePicButton>
             )}
             {profile?.hasUnregisteredCourses &&
               profile?.courses?.some((c) => c.role === Role.PROFESSOR) && (
@@ -170,13 +257,13 @@ export default function SettingsPage({
     <div>
       {isMobile ? (
         <Col>
-          <AvatarSettings />
+          {AvatarSettings()}
           <SettingsMenu />
         </Col>
       ) : (
         <Row>
           <Col span={5} style={{ textAlign: "center" }}>
-            <AvatarSettings />
+            {AvatarSettings()}
             <SettingsMenu />
           </Col>
           <VerticalDivider />

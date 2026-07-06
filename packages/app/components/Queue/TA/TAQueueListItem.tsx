@@ -83,7 +83,11 @@ export default function TAQueueListItem({
             style={{ backgroundColor: "#3684c6" }}
             offset={[-40, 0]}
           >
-            <KOHAvatar size={40} name={question.creator.name} />
+            <KOHAvatar
+              size={40}
+              name={question.creator.name}
+              photoURL={question.creator.photoURL}
+            />
           </Badge>
         </AvatarContainer>
         <QuestionInfoContainer>

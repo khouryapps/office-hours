@@ -214,7 +214,11 @@ const QueueCard = ({
         <div>
           {staffList.map((staffMember) => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
-              <StyledKOHAvatar size={96} name={staffMember.name} />
+              <StyledKOHAvatar
+                size={96}
+                name={staffMember.name}
+                photoURL={staffMember.photoURL}
+              />
             </Tooltip>
           ))}
         </div>
