@@ -41,6 +41,9 @@ const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({
   appConfig: {
     session: {
       store: new RedisStore({ client: redisClient }),
+      // Without this the library falls back to its default secret ('secret'),
+      // which lets anyone forge an admin session cookie
+      secret: process.env.ADMIN_SESSION_SECRET,
     },
   },
 });
