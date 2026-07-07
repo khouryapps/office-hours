@@ -72,4 +72,9 @@ export class CourseModel extends BaseEntity {
   // WARNING: THIS SHOULD ONLY BE USED AS A TEMPORARY MEASURE WHEN THINGS LIKE BANNER ARE DOWN
   @Column('boolean', { nullable: true, default: false })
   selfEnroll: boolean;
+
+  // Used by the admin panel to label this course in lists and dropdowns
+  toString(): string {
+    return `${this.name} (#${this.id})`;
+  }
 }

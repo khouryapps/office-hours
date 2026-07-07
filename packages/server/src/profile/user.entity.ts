@@ -93,4 +93,9 @@ export class UserModel extends BaseEntity {
   setFullNames(): void {
     this.name = this.firstName + ' ' + this.lastName;
   }
+
+  // Used by the admin panel to label this user in lists and dropdowns
+  toString(): string {
+    return `${this.firstName} ${this.lastName} <${this.email}> (#${this.id})`;
+  }
 }
