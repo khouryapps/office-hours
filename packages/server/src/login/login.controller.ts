@@ -27,7 +27,7 @@ import { CourseModel } from 'course/course.entity';
 import { User } from 'decorators/user.decorator';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
-import * as httpSignature from 'http-signature';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
@@ -49,14 +49,30 @@ export class LoginController {
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
     if (process.env.NODE_ENV === 'production') {
-      // Check that request has come from Khoury
-      const parsedRequest = httpSignature.parseRequest(req);
-      const verifySignature = httpSignature.verifyHMAC(
-        parsedRequest,
-        this.configService.get('KHOURY_PRIVATE_KEY'),
+      // Check that request has come from Khoury:
+      // X-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>." + raw body>
+      const header = req.headers['x-signature'];
+      const match = /^t=(\d+),v1=([0-9a-f]{64})$/.exec(
+        typeof header === 'string' ? header : '',
       );
-      if (!verifySignature) {
-        Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
+      if (!match || !(req as any).rawBody) {
+        Sentry.captureMessage('Missing or malformed request signature');
+        throw new UnauthorizedException('Invalid request signature');
+      }
+      const [, timestamp, signature] = match;
+      if (Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) {
+        Sentry.captureMessage('Expired request signature');
+        throw new UnauthorizedException('Invalid request signature');
+      }
+      const expected = createHmac(
+        'sha256',
+        this.configService.get('KHOURY_HMAC_KEY'),
+      )
+        .update(`${timestamp}.`)
+        .update((req as any).rawBody)
+        .digest('hex');
+      if (!timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) {
+        Sentry.captureMessage('Invalid request signature');
         throw new UnauthorizedException('Invalid request signature');
       }
     }
