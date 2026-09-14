@@ -23,6 +23,7 @@ import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { LoginCourseService } from '../login/login-course.service';
+import { ProfileService } from '../profile/profile.service';
 import { CourseModel } from './course.entity';
 import { UserModel } from 'profile/user.entity';
 
@@ -31,6 +32,7 @@ export class CourseService {
   constructor(
     private connection: Connection,
     private loginCourseService: LoginCourseService,
+    private profileService: ProfileService,
   ) {}
 
   async getTACheckInCheckOutTimes(
@@ -308,6 +310,10 @@ export class CourseService {
         courseId: course.id,
         role: Role.PROFESSOR,
       }).save();
+    }
+
+    if (await this.profileService.hasUnregisteredCourses(userId)) {
+      return;
     }
 
     try {
