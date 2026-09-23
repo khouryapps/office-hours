@@ -82,7 +82,7 @@ export class LoginController {
       user = await this.loginCourseService.addUserFromKhoury(body);
     } catch (e) {
       Sentry.captureException(e);
-      console.error('Khoury login threw an exception, the body was ', body);
+      console.error('Khoury login threw an exception for', body.email);
       console.error(e);
       throw new HttpException(
         ERROR_MESSAGES.loginController.addUserFromKhoury,

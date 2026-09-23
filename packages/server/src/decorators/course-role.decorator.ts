@@ -9,9 +9,9 @@ export const CourseRole = createParamDecorator(
       relations: ['courses'],
     });
 
-    const userCourse = user.courses.find((course) => {
+    const userCourse = user?.courses.find((course) => {
       return Number(course.courseId) === Number(courseId);
     });
-    return userCourse.role;
+    return userCourse?.role;
   },
 );
