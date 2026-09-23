@@ -233,7 +233,7 @@ export class AdminOverviewController {
             <td><a href="/admin/usercourse/usercoursemodel/${uc.id}/change">#${uc.id}</a></td>
             <td>
               <form class="inline" method="POST" action="/admin/usercourse/usercoursemodel/${uc.id}/delete"
-                    onsubmit="return confirm('Remove ${escapeHtml(uc.user ? `${uc.user.firstName} ${uc.user.lastName}` : 'this enrollment')} from ${escapeHtml(course.name)}?')">
+                    onsubmit="return confirm(${escapeHtml(JSON.stringify(`Remove ${uc.user ? `${uc.user.firstName} ${uc.user.lastName}` : 'this enrollment'} from ${course.name}?`))})">
                 <button class="btn btn-outline-danger btn-sm" type="submit">Remove</button>
               </form>
             </td>
