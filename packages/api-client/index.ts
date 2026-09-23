@@ -163,12 +163,18 @@ class APIClient {
       courseId: number,
       room: string
     ): Promise<TAUpdateStatusResponse> =>
-      this.req("POST", `/api/v1/courses/${courseId}/ta_location/${room}`),
+      this.req(
+        "POST",
+        `/api/v1/courses/${courseId}/ta_location/${encodeURIComponent(room)}`
+      ),
     checkOut: async (
       courseId: number,
       room: string
     ): Promise<TACheckoutResponse> =>
-      this.req("DELETE", `/api/v1/courses/${courseId}/ta_location/${room}`),
+      this.req(
+        "DELETE",
+        `/api/v1/courses/${courseId}/ta_location/${encodeURIComponent(room)}`
+      ),
     makeQueue: async (
       courseId: number,
       room: string,
@@ -177,7 +183,9 @@ class APIClient {
     ): Promise<TAUpdateStatusResponse> =>
       this.req(
         "POST",
-        `/api/v1/courses/${courseId}/generate_queue/${room}`,
+        `/api/v1/courses/${courseId}/generate_queue/${encodeURIComponent(
+          room
+        )}`,
         QueuePartial,
         { notes, isProfessorQueue }
       ),
