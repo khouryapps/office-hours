@@ -58,6 +58,7 @@ export class QuestionController {
   ) {}
 
   @Get(':questionId')
+  @Roles(Role.TA, Role.PROFESSOR)
   async getQuestion(
     @Param('questionId') questionId: number,
   ): Promise<GetQuestionResponse> {
