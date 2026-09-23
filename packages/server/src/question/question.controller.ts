@@ -268,6 +268,7 @@ export class QuestionController {
     const questions = await QuestionModel.find({
       where: {
         id: In(body.questionIds),
+        queueId: body.queueId,
       },
       relations: ['taHelped', 'creator'],
     });
