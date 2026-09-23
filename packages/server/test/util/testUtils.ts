@@ -78,7 +78,10 @@ export function setupIntegrationTest(
   return (options?: SupertestOptions): supertest.SuperTest<supertest.Test> => {
     const agent = supertest.agent(app.getHttpServer());
     if (options?.userId) {
-      const token = jwtService.sign({ userId: options.userId });
+      const token = jwtService.sign({
+        userId: options.userId,
+        token_type: 'auth',
+      });
       agent.set('Cookie', [`auth_token=${token}`]);
     }
     return agent;
