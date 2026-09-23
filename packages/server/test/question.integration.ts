@@ -44,6 +44,7 @@ describe('Question Integration', () => {
       });
 
       const queue = await QueueFactory.create({
+        course: course,
         staffList: [ta.user],
       });
 
@@ -54,7 +55,7 @@ describe('Question Integration', () => {
         creator: student1.user,
       });
 
-      const response = await supertest({ userId: 99 })
+      const response = await supertest({ userId: ta.user.id })
         .get(`/questions/${q.id}`)
         .expect(200);
 

@@ -21,4 +21,9 @@ export class SemesterModel extends BaseEntity {
 
   @OneToMany((type) => CourseModel, (course) => course.semester)
   courses: CourseModel[];
+
+  // Used by the admin panel to label this semester in lists and dropdowns
+  toString(): string {
+    return `${this.season} ${this.year} (#${this.id})`;
+  }
 }

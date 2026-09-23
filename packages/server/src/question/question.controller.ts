@@ -58,6 +58,7 @@ export class QuestionController {
   ) {}
 
   @Get(':questionId')
+  @Roles(Role.TA, Role.PROFESSOR)
   async getQuestion(
     @Param('questionId') questionId: number,
   ): Promise<GetQuestionResponse> {
@@ -267,6 +268,7 @@ export class QuestionController {
     const questions = await QuestionModel.find({
       where: {
         id: In(body.questionIds),
+        queueId: body.queueId,
       },
       relations: ['taHelped', 'creator'],
     });

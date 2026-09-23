@@ -3,6 +3,7 @@ import {
   AdminCoreModuleFactory,
   AdminAuthModuleFactory,
   DefaultAdminSite,
+  DefaultAdminNunjucksEnvironment,
 } from 'nestjs-admin';
 import { adminCredentialValidator } from './credentialValidator';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,6 +17,7 @@ import {
   SemesterAdmin,
 } from './admin-entities';
 import { AdminCommand } from './admin.command';
+import { AdminOverviewController } from './admin-overview.controller';
 import * as session from 'express-session';
 import * as connectRedis from 'connect-redis';
 import { createClient } from 'redis';
@@ -41,6 +43,9 @@ const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({
   appConfig: {
     session: {
       store: new RedisStore({ client: redisClient }),
+      // Without this the library falls back to its default secret ('secret'),
+      // which lets anyone forge an admin session cookie
+      secret: process.env.ADMIN_SESSION_SECRET,
     },
   },
 });
@@ -51,18 +56,45 @@ const AuthModule = AdminAuthModuleFactory.createAdminAuthModule({
   providers: [],
 });
 
+// The library's navbar template, plus a link to the custom courses overview
+// page. Served by a prepended nunjucks loader so every admin page picks it up
+// without patching node_modules.
+const headerWithOverviewLink = `<nav class="admin-header navbar navbar-dark bg-dark">
+  <a class="navbar-brand mb-0 h1" href="{{ 'index' | adminUrl() }}">{{ adminSite.siteHeader }}</a>
+  <div class="d-flex align-items-center">
+    <a class="btn btn-outline-light btn-sm" style="margin-right: 1rem" href="/admin/overview">Courses overview</a>
+    {% if request.user %}
+      <form action="{{ "logout" | adminUrl() }}" method="POST" style="margin: 0">
+        <button type="submit" class="admin-header__logout">Logout</button>
+      </form>
+    {% endif %}
+  </div>
+</nav>`;
+
 @Module({
   imports: [CoreModule, AuthModule],
   exports: [CoreModule, AuthModule],
   providers: [AdminCommand],
+  controllers: [AdminOverviewController],
 })
 export class AdminModule {
-  constructor(private readonly adminSite: DefaultAdminSite) {
+  constructor(
+    private readonly adminSite: DefaultAdminSite,
+    adminEnv: DefaultAdminNunjucksEnvironment,
+  ) {
     adminSite.register('Course', CourseAdmin);
     adminSite.register('User', UserAdmin);
     adminSite.register('UserCourse', UserCourseAdmin);
     adminSite.register('Queue', QueueAdmin);
     adminSite.register('CourseSectionMapping', CourseSectionMappingAdmin);
     adminSite.register('Semester', SemesterAdmin);
+
+    (adminEnv.env as any).loaders.unshift({
+      cache: {},
+      getSource: (name: string) =>
+        name === 'header.njk'
+          ? { src: headerWithOverviewLink, path: name, noCache: true }
+          : null,
+    });
   }
 }

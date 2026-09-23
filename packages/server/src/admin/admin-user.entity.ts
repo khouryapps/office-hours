@@ -3,7 +3,7 @@ import { hashSync } from 'bcrypt';
 
 /**
  * Admin users are totally separate from regular users and can only be created from command line.
- * `yarn cli admin:create`
+ * `yarn cli create:admin <username>`
  */
 @Entity('admin_user_model')
 export class AdminUserModel extends BaseEntity {

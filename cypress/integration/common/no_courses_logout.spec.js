@@ -9,15 +9,10 @@ describe("Testing no courses logout", () => {
             // reload page to have student with no classes
             cy.visit('/')
             cy.get("body").should("contain", "None of your courses are using the Khoury Office Hours App.");
-            // ensure logout button exists
-            cy.get("[data-cy='logout-button']").should(
-                "have.attr",
-                "href",
-                "/api/v1/logout"
-              );
-              // execute logout action
-              cy.visit("/api/v1/logout");
-              cy.get("body").should("contain", "You are currently not logged in");
+            // execute logout action
+            cy.get("[data-cy='logout-button']").click()
+            cy.location("pathname").should("eq", "/login")
+            cy.get("body").should("contain", "You are currently not logged in");
         });
     })
 })

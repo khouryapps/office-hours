@@ -5,6 +5,7 @@ import { RewriteFrames } from '@sentry/integrations';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import * as cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
@@ -13,7 +14,17 @@ import { StripUndefinedPipe } from './stripUndefined.pipe';
 export async function bootstrap(hot: any): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+    bodyParser: false,
   });
+  // Replaces Nest's default parsers so the raw body is kept for signature verification
+  app.use(
+    json({
+      verify: (req, res, buf) => {
+        (req as any).rawBody = buf;
+      },
+    }),
+  );
+  app.use(urlencoded({ extended: true }));
   if (process.env.NODE_ENV === 'production') {
     setupAPM(app);
   }

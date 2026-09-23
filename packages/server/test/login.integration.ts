@@ -19,7 +19,13 @@ import { setupIntegrationTest } from './util/testUtils';
 
 const mockJWT = {
   signAsync: async (payload) => JSON.stringify(payload),
-  verifyAsync: async (payload) => JSON.parse(payload).token !== 'INVALID_TOKEN',
+  verifyAsync: async (token) => {
+    const payload = JSON.parse(token);
+    if (payload.token === 'INVALID_TOKEN') {
+      throw new Error('Invalid token');
+    }
+    return payload;
+  },
   decode: (payload) => JSON.parse(payload),
 };
 
@@ -32,7 +38,10 @@ describe('Login Integration', () => {
 
   describe('POST /login/entry', () => {
     it('request to entry with correct jwt payload works', async () => {
-      const token = await mockJWT.signAsync({ userId: 1 });
+      const token = await mockJWT.signAsync({
+        userId: 1,
+        token_type: 'login',
+      });
 
       const res = await supertest()
         .get(`/login/entry?token=${token}`)
@@ -45,7 +54,10 @@ describe('Login Integration', () => {
     it('entry as user with courses goes to root page', async () => {
       const user = await UserFactory.create();
       await UserCourseFactory.create({ user: user });
-      const token = await mockJWT.signAsync({ userId: user.id });
+      const token = await mockJWT.signAsync({
+        userId: user.id,
+        token_type: 'login',
+      });
 
       const res = await supertest()
         .get(`/login/entry?token=${token}`)
@@ -86,7 +98,7 @@ describe('Login Integration', () => {
 
       // And that the redirect is correct
       expect(res.body).toEqual({
-        redirect: `http://localhost:3000/api/v1/login/entry?token={"userId":${newUser.id}}`,
+        redirect: `http://localhost:3000/api/v1/login/entry?token={"userId":${newUser.id},"token_type":"login"}`,
       });
     });
 
