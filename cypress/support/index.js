@@ -23,7 +23,7 @@ beforeEach(() => {
   cy.request("/api/v1/seeds/delete");
 });
 
-const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/;
+const resizeObserverLoopErrRe = /ResizeObserver loop/;
 Cypress.on("uncaught:exception", (err) => {
   /* returning false here prevents Cypress from failing the test */
   if (resizeObserverLoopErrRe.test(err.message)) {
