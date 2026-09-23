@@ -2,19 +2,15 @@
 
 // some code taken from https://medium.com/izettle-engineering/beginners-guide-to-web-push-notifications-using-service-workers-cb3474a17679
 
-self.addEventListener("push", async function (event) {
+self.addEventListener("push", function (event) {
   if (event.data) {
-    try {
-      await showLocalNotification(
+    event.waitUntil(
+      showLocalNotification(
         "Khoury Office Hours",
         event.data.text(),
         self.registration
-      );
-    } catch (err) {
-      throw new Err(
-        `error sending notif from browser to local machine: ${err}`
-      );
-    }
+      )
+    );
   } else {
     console.log("Push event but no data");
   }
