@@ -10,7 +10,9 @@ export function useTeams(
   function openTeams(): void {
     if (isQueueOnline) {
       window.open(
-        `https://teams.microsoft.com/l/chat/0/0?users=${users}&message=${message}`
+        `https://teams.microsoft.com/l/chat/0/0?users=${users}&message=${encodeURIComponent(
+          message
+        )}`
       );
     }
   }
